@@ -1,0 +1,10 @@
+<launch>
+	<node name="driver" pkg="sumo_driver" type="sumo_driver" output="screen"/>
+
+	<arg name="port_name" default="/dev/ttyACM0"/>
+	<arg name="baud" default="57600"/>
+	<node name="serial" pkg="rosserial_python" type="serial_node.py">
+		<param name="port" type="str" value="$(arg port_name)"/>
+		<param name="baud" type="str" value="$(arg baud)"/>
+	</node>
+</launch>

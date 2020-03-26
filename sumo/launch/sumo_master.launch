@@ -1,0 +1,11 @@
+<launch>
+  <master auto="start"/>
+
+  <include file="$(find sumo)/launch/ar_track.launch">
+    <arg name="marker_size" value="6.1" />
+  </include>
+
+  <node name="driver" pkg="sumo_driver" type="sumo_driver" output="screen"/>
+  <node name="controller" pkg="sumo_controller" type="sumo_controller" output="screen"/>
+
+</launch>
