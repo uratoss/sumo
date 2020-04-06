@@ -1,11 +1,11 @@
 #include <geometry_msgs/Twist.h>
 #include <boost/math/constants/constants.hpp>
+#include <cmath>
 
 #include "sumo_controller/sumo_controller.h"
 
 namespace sumo {
-controller::controller()
-    : is_first_(true), prev_position_(Eigen::Vector3d::Zero()) {
+controller::controller() {
   sub = nh.subscribe<ar_track_alvar_msgs::AlvarMarkers>(
       "/ar_pose_marker", 10, &controller::ar_call_back, this);
   pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 50);
@@ -28,10 +28,9 @@ void controller::ar_call_back(
   geometry_msgs::Twist cmd;
 
   if (markers->markers.empty()) {
-    is_first_ = true;
-    cmd.linear.x = 0.0;
+    // cmd.linear.x = 0.0;
     // cmd.angular.z = 6 * boost::math::constants::pi<double>();
-    cmd.angular.z = 0.0;
+    // cmd.angular.z = 0.0;
     pub.publish(cmd);
     return;
   }
@@ -45,20 +44,18 @@ void controller::ar_call_back(
   const double &y = position_or.y();
   const double &z = position_or.z();
 
-  cmd.linear.x = std::hypot(x, y);
+  const double th = std::atan2(y, x);
+  const double hypot = std::hypot(x, y);
 
-  double speed = 0.0;
-  ros::Time now_time = ros::Time(0);
-  if (!is_first_) {
-    ros::Duration time_span = now_time - prev_time_;
-    speed =
+  ROS_INFO_STREAM("hypot : " << hypot << " th : " << th);
+  if (std::abs(th) > boost::math::constants::pi<double>() / 32) {
+    cmd.angular.z = std::copysign(20, th);
+  } else if (hypot > 0.15) {
+    // cmd.linear.x = hypot / 2;
+    cmd.linear.x = 1;
   }
-  prev_time_ = now_time;
 
-  float th = std::atan2(y, x);
-  cmd.angular.z = 4 * boost::math::constants::pi<double>() * th;
-
-  ROS_INFO_STREAM("x : " << cmd.linear.x << " th : " << th);
+  ROS_INFO_STREAM("x : " << cmd.linear.x << " z : " << cmd.angular.z);
 
   pub.publish(cmd);
 }

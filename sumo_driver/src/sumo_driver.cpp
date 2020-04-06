@@ -6,7 +6,7 @@ namespace sumo {
 driver::driver() : d_(0.05) {
   sub = nh.subscribe<geometry_msgs::Twist>("cmd_vel", 10,
                                            &driver::cmd_call_back, this);
-  pub = nh.advertise<sumo_driver::Zop>("operation", 50);
+  pub = nh.advertise<sumo_driver::Zop>("operation", 5);
 }
 
 void driver::run() { ros::spin(); }

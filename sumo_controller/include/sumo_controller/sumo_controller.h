@@ -5,9 +5,6 @@
 #include <tf/transform_listener.h>
 #include <ar_track_alvar_msgs/AlvarMarkers.h>
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-
 namespace sumo {
     
 class controller {
@@ -20,9 +17,6 @@ class controller {
   ros::Publisher pub;
   ros::Subscriber sub;
   tf::StampedTransform tf_;
-  ros::Time prev_time;
-  Eigen::Vector3d prev_position;
-  bool is_first_;
 
   void ar_call_back(const ar_track_alvar_msgs::AlvarMarkers::ConstPtr &marker);
 };
